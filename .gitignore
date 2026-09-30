@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+
+# Datos descargados (se regeneran solos con backtest.py)
+datos_historicos/
+
+# Salidas generadas (las imágenes del informe están en docs/img)
+resultados/
+
+# Estado del paper trading (cambia cada hora)
+paper/
+
+# LaTeX
+docs/*.aux
+docs/*.log
+docs/*.out
+docs/*.synctex.gz

@@ -1,0 +1,83 @@
+# ============================================================
+#  TRADER IA - Fase 1 (scanner + plan + riesgo)
+#  Edita estos valores sin tocar el código.
+#  Solo analiza: NO compra, NO vende, NO se conecta a tu cuenta.
+# ============================================================
+
+mercado:
+  exchange: binance        # API pública, no requiere cuenta ni clave
+  timeframe: 4h            # temporalidad de las velas
+  velas: 500               # historia a descargar (EMA200 necesita calentamiento)
+  pares:
+    - BTC/USDT
+    - ETH/USDT
+    - SOL/USDT
+    - BNB/USDT
+    - XRP/USDT
+    - ADA/USDT
+    - DOGE/USDT
+    - AVAX/USDT
+    - LINK/USDT
+    - DOT/USDT
+    - TRX/USDT
+    - LTC/USDT
+    - BCH/USDT
+    - NEAR/USDT
+    - SUI/USDT
+
+indicadores:
+  ema_rapida: 20
+  ema_media: 50
+  ema_lenta: 200
+  rsi: 14
+  atr: 14
+  volumen_promedio: 20     # velas para el volumen promedio
+  lookback_ruptura: 20     # máximo de N velas que hay que romper
+  velas_consolidacion: 6   # pausa previa para "continuación"
+
+senales:
+  volumen_ruptura: 1.5     # volumen relativo mínimo para ruptura
+  puntaje_minimo: 60       # bajo esto, a lo más WATCHLIST
+  # Ajuste tras backtest 29-09-2026: Pullback y Continuación perdían en ambos
+  # tramos (-0,12R y -0,17R). Para reactivarlos, agrégalos a la lista.
+  setups_activos: [Ruptura, Momentum, Reversión]
+  # Operaciones en tendencia lateral perdían -0,23R en promedio
+  tendencias_permitidas: [alcista]
+  # Fuerza relativa: retorno del par menos retorno de BTC en N velas.
+  # Si está activa, solo se aprueba si el par le ganó a BTC (BTC siempre pasa).
+  fuerza_relativa_activa: false
+  fuerza_relativa_velas: 180   # 180 velas de 4H = 30 días
+  fuerza_relativa_minima: 0.0
+
+plan:
+  velas_swing: 10          # mínimo reciente usado como invalidación
+  buffer_stop_atr: 0.25    # stop = invalidación - buffer x ATR
+  stop_min_atr: 1.0        # distancia mínima entrada-stop (en ATR)
+  stop_max_atr: 3.0        # distancia máxima entrada-stop (en ATR)
+  velas_resistencia: 150   # historia para buscar resistencias
+  proyeccion_r: 2.0        # objetivo si no hay resistencia arriba (en R)
+  # Salida: "objetivo" (objetivo fijo + salida por tiempo) o "trailing"
+  # (stop dinámico: sin objetivo ni límite de tiempo; deja correr la ganancia)
+  salida: objetivo
+  trailing_activacion_r: 1.0  # el stop empieza a subir con +1R a favor
+  trailing_atr: 3.0           # stop = cierre más alto - 3 x ATR
+
+riesgo:
+  capital: 1000            # capital FICTICIO en USDT
+  riesgo_por_trade: 0.01   # 1% del capital en riesgo por operación
+  rr_minimo: 1.5           # R:B mínimo para APROBADO
+  rr_watchlist: 1.0        # R:B mínimo para WATCHLIST
+  atr_pct_maximo: 0.08     # volatilidad máxima aceptada (ATR / precio)
+  posicion_max_pct: 0.30   # ninguna posición supera 30% del capital
+  exposicion_max_pct: 0.90 # suma de posiciones aprobadas (sin apalancamiento)
+  max_posiciones: 3
+  perdida_max_total: 0.03  # riesgo sumado de todo lo aprobado
+  drawdown_actual: 0.0     # por ahora manual; en fase 5 se calculará solo
+  drawdown_maximo: 0.10    # si se supera, no se aprueba nada
+
+backtest:
+  anos: 3                  # historia a simular
+  fecha_corte: "2025-01-01" # antes = entrenamiento, después = validación
+  comision: 0.001          # 0,1% por lado (Binance spot)
+  deslizamiento: 0.0005    # 0,05% en entradas y salidas a mercado
+  max_velas: 42            # salida por tiempo (42 velas de 4H = 7 días)
